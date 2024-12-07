@@ -128,3 +128,4 @@ if __name__ == "__main__":
         print("LAST YEAR OF FILING: ", item['last_year'])
         print("FILTER PARAMETER VALUE: ", "${:,.2f}".format(item['filter']))
         print('_______________________________________\n')
+        
