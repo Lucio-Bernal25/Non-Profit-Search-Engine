@@ -1,5 +1,4 @@
 # Non-Profit-Search-Engine
-
 ## Setup
 
 Create a virtual environment (first time only):
