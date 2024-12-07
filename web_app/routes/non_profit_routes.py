@@ -46,6 +46,10 @@ def about():
             #What do we pass into the dashboard??? Info for graph + parameters we define
             state=state,
         )
-    
-    return render_template("dashboard.html"):
+    except Exception as err:
+        print('OOPS', err)
+
+
+        flash("Market Data Error. Please check your symbol and try again!", "danger")
+        return redirect("/stocks/form")
 
