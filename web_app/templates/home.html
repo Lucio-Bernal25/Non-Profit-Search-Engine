@@ -1,0 +1,52 @@
+{% extends "bootstrap_5_layout.html" %}
+{% set active_page = "home" %}
+
+{% block content %}
+
+    <h2>Non-Profit Search Engine Webapp</h2>
+
+    <p>Request some non-profit data here...</p>
+
+    <form action="/home" method="POST">
+
+        <label>State (Use two-letter U.S. Postal Service abbreviation):</label>
+        <input type="text" name="state" placeholder="FL" value="FL">
+        <br>
+
+        <label>Category:</label>
+        <select name="category">
+            <option value="1">Arts, Culture & Humanities</option>
+            <option value="2">Education</option>
+            <option value="3">Environment and Animals</option>
+            <option value="4">Health</option>
+            <option value="5">Human Services</option>
+            <option value="6">International, Foreign Affairs</option>
+            <option value="7">Public, Societal Benefit</option>
+            <option value="8">Religion Related</option>
+            <option value="9">Mutual/Membership Benefit</option>
+            <option value="10">Unknown, Unclassified</option>
+        </select>
+        <br>
+        
+        <!--
+        Add filter parameters we consider most appropiate
+    -->
+        <label>Filter Parameter:</label>
+        <select name="category">
+            <option value="1">Arts, Culture & Humanities</option>
+            <option value="2">Education</option>
+            <option value="3">Environment and Animals</option>
+            <option value="4">Health</option>
+            <option value="5">Human Services</option>
+            <option value="6">International, Foreign Affairs</option>
+            <option value="7">Public, Societal Benefit</option>
+            <option value="8">Religion Related</option>
+            <option value="9">Mutual/Membership Benefit</option>
+            <option value="10">Unknown, Unclassified</option>
+        </select>
+        <br>
+
+        <button class="btn btn-success">Submit</button>
+    </form>
+
+{% endblock %}

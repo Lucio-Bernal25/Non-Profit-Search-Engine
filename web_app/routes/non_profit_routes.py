@@ -1,7 +1,10 @@
 
-from flask import Blueprint, request, render_template
+from flask import Blueprint, request, render_template, redirect, flash
+
+from app.non_profit import get_non_profits
 
 home_routes = Blueprint("home_routes", __name__)
+
 
 @home_routes.route("/")
 @home_routes.route("/home")
@@ -16,22 +19,33 @@ def about():
     #return "About Me"
     return render_template("about.html")
 
-@home_routes.route("/hello")
-def hello_world():
-    print("HELLO...")
+#Model after stocks dashboard route
+@home_routes.route("/dashboard")
+def about():
+    print("Dashboard...")
+    
+    #What is request_data? (GET vs POST?)
+    print("REQUEST DATA:", request_data)
 
-    # if the request contains url params,
-    # for example a request to "/hello?name=Harper"
-    # the request.args property will hold the values in a dictionary-like structure
-    # can be empty like {} or full of params like {"name":"Harper"}
-    url_params = dict(request.args)
-    print("URL PARAMS:", url_params)
+    state = request_data.get("state") or "" # get specified state or use null
+    
+    category = request_data.get("category") or "" 
+    
+    filter_param = request_data.get("filter_param") or "totprgmrevnue"
+    
+    year = request_data.get("year") or "2020"
 
-    # access "name" key if present, otherwise use default value
-    name = url_params.get("name") or "World"
+    try:
+        parameters_list = ['totprgmrevnue', 'grsincfndrsng ', 'totrevenue', 'gftgrntsrcvd170' , 'compnsatncurrofcr', 'pdf_url']
+        
+        sorted_orgs = get_non_profits(state, category, parameters_list, filter_param, year)
 
-    message = f"Hello, {name}!"
 
-    x = 5
-    #return message
-    return render_template("hello.html", message=message, x=x, y=20)
+        flash("Fetched Real-time Market Data!", "success")
+        return render_template("stocks_dashboard.html",
+            #What do we pass into the dashboard??? Info for graph + parameters we define
+            state=state,
+        )
+    
+    return render_template("dashboard.html"):
+
