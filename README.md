@@ -29,3 +29,14 @@ Run the non-profit search engine (Console):
 
 python -m app.unemployment
 ```
+
+Webapp:
+flask run
+
+## Testing
+
+Run tests:
+
+```sh
+pytest
+```
