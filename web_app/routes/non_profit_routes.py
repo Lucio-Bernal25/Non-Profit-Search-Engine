@@ -46,9 +46,8 @@ def dashboard():
 
         print(sorted_orgs)
 
-        flash("Fetched Real-time Market Data!", "success") #UDPADDTAE
+        flash("Fetched Real Non=Profit Data!", "success") 
         return render_template("dashboard.html",
-            #What do we pass into the dashboard??? Info for graph + parameters we define
             state=state,
             category = category,
             filter_param= filter_param,
@@ -59,6 +58,6 @@ def dashboard():
         print('OOPS', err)
 
 
-        flash("Market Data Error. Please check your symbol and try again!", "danger")
+        flash("Data Error. Please check your inputs and try again!", "danger")
         return redirect("/home")
 

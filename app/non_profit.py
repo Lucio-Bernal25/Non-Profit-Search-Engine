@@ -27,7 +27,6 @@ def org_data_access(ein, parameters_list, year, filter_param):
     organization_url = f"https://projects.propublica.org/nonprofits/api/v2/organizations/{ein}.json"
     # org_search refers to the /organizations/:ein.json Result
     org_search = requests.get(organization_url).json()
-    print("orgsearch success")
     # filings refer to the filing object. It is a list of years of filings each with a filing object datum.
     filings = org_search['filings_with_data']
 
@@ -35,17 +34,18 @@ def org_data_access(ein, parameters_list, year, filter_param):
 
 
     # Adding necessary filter parameter to org_dict for specfic year. Can be accessed with ['filter']
-    print("ready to filter")
     add_filter_param(org_dict, filings, int(year), filter_param)
-    print("filter succesful")
 
     # Adding basic necessary parameters to org_dict object which includes: ein, organiation object, year, formtype.
     org_dict['ein'] = ein
     org_dict['organization'] = org_search['organization']
-    org_dict['start_year'] = int(filings[-1]['tax_prd_yr'])
-    org_dict['last_year'] = int(filings[0]['tax_prd_yr'])
+    try:    
+        org_dict['start_year'] = int(filings[-1]['tax_prd_yr'])
+        org_dict['last_year'] = int(filings[0]['tax_prd_yr'])
+    except IndexError:
+        org_dict['start_year'] = None
+        org_dict['last_year'] = None
     org_dict['filings'] = []
-    print("added params success")
 
     #adding a filings list with every year's filings with only the necessary parameters (the parameters from the pameters_list)
     for filing in filings:
@@ -57,14 +57,12 @@ def org_data_access(ein, parameters_list, year, filter_param):
             
         filing_dict['tax_prd_year'] = year_filing
         # Adding parameters specified in list
-        print("Year success")
         for parameter in parameters_list:
             try:
                 filing_dict[parameter] = filing[parameter]
             except KeyError:
                 filing_dict[parameter] = 0
         org_dict['filings'].append(filing_dict)
-        print("append success")
     return org_dict
 
 #Support function for org_data_access that gets value that will be used to organize organizations from best to worst.
@@ -72,8 +70,9 @@ def add_filter_param(org_dict, filings, year, filter_param):
     #locating if filing of specified year exists
     org_dict['filter'] = None
     try:
-        if (int(filings[-1]['tax_prd_yr'])<=year) and (int(filings[0]['tax_prd_yr'])>=year):
-
+        if len(filings)==0:
+            org_dict['filter'] = None
+        elif (int(filings[-1]['tax_prd_yr'])<=year) and (int(filings[0]['tax_prd_yr'])>=year):
             #iterating through different years to find correct one and add it with the filter key
             for filing in filings:
                 if int(filing['tax_prd_yr'])==year:
@@ -100,8 +99,6 @@ def get_non_profits(state="", category="", parameters_list=['totprgmrevnue', 'gr
         if not(org['filter'] is None):
             sorted_orgs.append(org)
 
-    print("sorted orgs")
-    print(sorted_orgs)
     #sort the data pased on the desired parameter
     sorted_orgs = sorted(sorted_orgs, key=itemgetter('filter'))
     return sorted_orgs
