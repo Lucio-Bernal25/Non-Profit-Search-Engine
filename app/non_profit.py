@@ -100,7 +100,7 @@ def get_non_profits(state="", category="", parameters_list=['totprgmrevnue', 'gr
             sorted_orgs.append(org)
 
     #sort the data pased on the desired parameter
-    sorted_orgs = sorted(sorted_orgs, key=itemgetter('filter'))
+    sorted_orgs = sorted(sorted_orgs, key=itemgetter('filter'), reverse=True)
     return sorted_orgs
 
 # Description of Data structure sorted_orgs:
