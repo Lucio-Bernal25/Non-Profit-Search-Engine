@@ -20,9 +20,13 @@ def about():
     return render_template("about.html")
 
 #Model after stocks dashboard route
-@home_routes.route("/dashboard")
-def about():
+@home_routes.route("/dashboard", methods= ["POST"])
+def dashboard():
     print("Dashboard...")
+    
+
+    request_data = dict(request.form)
+
     
     #What is request_data? (GET vs POST?)
     print("REQUEST DATA:", request_data)
@@ -36,20 +40,25 @@ def about():
     year = request_data.get("year") or "2020"
 
     try:
-        parameters_list = ['totprgmrevnue', 'grsincfndrsng ', 'totrevenue', 'gftgrntsrcvd170' , 'compnsatncurrofcr', 'pdf_url']
+        parameters_list = ['totprgmrevnue', 'grsincfndrsng ', 'pdf_url']
         
         sorted_orgs = get_non_profits(state, category, parameters_list, filter_param, year)
 
+        print(sorted_orgs)
 
-        flash("Fetched Real-time Market Data!", "success")
-        return render_template("stocks_dashboard.html",
+        flash("Fetched Real-time Market Data!", "success") #UDPADDTAE
+        return render_template("dashboard.html",
             #What do we pass into the dashboard??? Info for graph + parameters we define
             state=state,
-        )
+            category = category,
+            filter_param= filter_param,
+            year= year,
+            sorted_orgs = sorted_orgs
+        ) 
     except Exception as err:
         print('OOPS', err)
 
 
         flash("Market Data Error. Please check your symbol and try again!", "danger")
-        return redirect("/stocks/form")
+        return redirect("/home")
 

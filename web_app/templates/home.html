@@ -7,7 +7,7 @@
 
     <p>Request some non-profit data here...</p>
 
-    <form action="/home" method="POST">
+    <form action="/dashboard" method="POST">
 
         <label>State (Use two-letter U.S. Postal Service abbreviation):</label>
         <input type="text" name="state" placeholder="FL" value="FL">
@@ -32,8 +32,8 @@
         Add filter parameters we consider most appropiate
     -->
         <label>Filter Parameter:</label>
-        <select name="category">
-            <option value="1">Arts, Culture & Humanities</option>
+        <select name="filter">
+            <option value="totprgmrevnue">Arts, Culture & Humanities</option>
             <option value="2">Education</option>
             <option value="3">Environment and Animals</option>
             <option value="4">Health</option>
@@ -44,6 +44,10 @@
             <option value="9">Mutual/Membership Benefit</option>
             <option value="10">Unknown, Unclassified</option>
         </select>
+        <br>
+
+        <label>Year (2015-2021):</label>
+        <input type="number" name="year" placeholder="2020" value="2020">
         <br>
 
         <button class="btn btn-success">Submit</button>
