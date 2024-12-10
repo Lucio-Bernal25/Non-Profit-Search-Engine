@@ -24,9 +24,7 @@ def about():
 def dashboard():
     print("Dashboard...")
     
-
     request_data = dict(request.form)
-
     
     #What is request_data? (GET vs POST?)
     print("REQUEST DATA:", request_data)
@@ -44,9 +42,8 @@ def dashboard():
         
         sorted_orgs = get_non_profits(state, category, parameters_list, filter_param, year)
 
-        print(sorted_orgs)
 
-        flash("Fetched Real Non=Profit Data!", "success") 
+        flash("Fetched Real Non-Profit Data!", "success") 
         return render_template("dashboard.html",
             state=state,
             category = category,
