@@ -3,13 +3,43 @@
 
 {% block content %}
 
-    <h2>Stocks Dashboard ({{ symbol }})</h2>
+    <h2>Showing results {{ state }} focused non-profits in {{ state }}.</h2>
 
-    <p class="lead">Showing results {{ state }} focused non-profits in {{ state }}.</p> 
+    <p class="lead">Non-profits are being sorted by {{filter_param}}</p> 
 
     <div id="chart-container" height="700px"></div>
 
-    <p class="lead">Data: {{ sorted_orgs }} .</p> 
+    <style>
+        .important-cell {
+            background-color: #26b381;
+            font-weight: 850;
+        }
+        </style>
+        
+        <table class="table table-hover">
+          <thead class="table-light">
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Organization Name</th>
+              <th scope="col">City</th>
+              <th scope="col">Total Assets</th>
+              <th scope="col">Annual Income</th>
+              <th scope="col" class="important-cell">Program Revenue</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for org in sorted_orgs %}
+            <tr>
+              <th scope="row">{{ loop.index }}</th>
+              <td>{{ org.organization.name }}</td>
+              <td>{{ org.organization.city }}</td>
+              <td>${{ '{:,.0f}'.format(org.organization.asset_amount) }}</td>
+              <td>${{ '{:,.0f}'.format(org.organization.income_amount) }}</td>
+              <td class="important-cell">${{ '{:,.0f}'.format(org.filter) }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
 
     
 

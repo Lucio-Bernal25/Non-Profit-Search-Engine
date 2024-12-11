@@ -97,6 +97,7 @@ def get_non_profits(state="", category="", parameters_list=['totprgmrevnue', 'gr
         org = org_data_access(item['ein'], parameters_list, year, filter_param)
         #check if filter param is valid for year (Won't add data that doesn't have a value in the year we are filtering of)
         if not(org['filter'] is None):
+            org['filter'] = int(org['filter'])
             sorted_orgs.append(org)
 
     #sort the data pased on the desired parameter
