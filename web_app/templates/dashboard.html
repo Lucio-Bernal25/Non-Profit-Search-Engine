@@ -1,5 +1,5 @@
 {% extends "bootstrap_5_layout.html" %}
-{% set active_page = "stocks_dashboard" %}
+{% set active_page = "dashboard" %}
 
 {% block content %}
     <h2>Showing results {{ category_name }} focused non-profits in {{ state }}.</h2>
@@ -21,6 +21,7 @@
               <th scope="col">Total Assets</th>
               <th scope="col">Annual Income</th>
               <th scope="col" class="important-cell">{{filter_param_name}}</th>
+              <th scope="col" class="important-cell"></th>
             </tr>
           </thead>
           <tbody>
@@ -32,6 +33,7 @@
               <td>${{ '{:,.0f}'.format(org.organization.asset_amount) }}</td>
               <td>${{ '{:,.0f}'.format(org.organization.income_amount) }}</td>
               <td class="important-cell">${{ '{:,.0f}'.format(org.filter) }}</td>
+              <td><a href="/organization?ein={{ org.organization.ein }}">See Details</a></td>
             </tr>
             {% endfor %}
           </tbody>

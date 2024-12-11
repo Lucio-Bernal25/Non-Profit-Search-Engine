@@ -51,3 +51,30 @@ def dashboard():
         print('OOPS', err)
         flash("Data Error. Please check your inputs and try again!", "danger")
         return redirect("/home")
+    
+    
+
+@home_routes.route("/organization", methods=["GET"])
+def stocks_dashboard():
+    print("ORGANIZATION DASHBOARD...")
+
+    request_data = dict(request.args)
+
+    print("REQUEST DATA:", request_data)
+
+    ein = request_data.get("ein")
+
+    try:
+
+
+        flash("Fetched information for Organization succesfully!", "success")
+        return render_template("organization.html",
+            ein=ein
+        )
+    except Exception as err:
+        print('OOPS', err)
+
+
+        flash("Data Error. Not Valid EIN. Please try again!", "danger")
+        return redirect("/dashboard")
+        
