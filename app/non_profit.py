@@ -135,7 +135,15 @@ def fetch_financial_data(ein):
         elif assets is None: 
             graph_data.append({'Year':year, 'Total Revenue':revenues, 'Total Expenses':expenses, 'Total Assets': 0, 'URL': url}) 
 
-
+def fetch_org_info(ein):
+    BASE_URL = "https://projects.propublica.org/nonprofits/api/v2/organizations"
+    
+    response = requests.get(f"{BASE_URL}/{ein}.json")
+    data = response.json()
+    
+    return data['organization']
+    
+    
 # Description of Data structure sorted_orgs:
     # A list of org objects organized based on a specfic value on a specific year.
     # Each org object is a dictionary that includes the base parameters ein, the organization object ['organization'], start_year, last year, formtype, and the filings list object ['filings'].
