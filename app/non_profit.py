@@ -25,7 +25,6 @@ def build_url(state="", category=""):
 # Organization-specific accessing of data from API. Will add parameters from list, and a filter parameter that uses filter_param for the specified year.
 def org_data_access(ein, parameters_list, year, filter_param):
     organization_url = f"https://projects.propublica.org/nonprofits/api/v2/organizations/{ein}.json"
-
     # org_search refers to the /organizations/:ein.json Result
     org_search = requests.get(organization_url).json()
     # filings refer to the filing object. It is a list of years of filings each with a filing object datum.
@@ -43,7 +42,6 @@ def org_data_access(ein, parameters_list, year, filter_param):
     org_dict['start_year'] = filings[-1]['tax_prd_yr']
     org_dict['last_year'] = filings[0]['tax_prd_yr']
     org_dict['filings'] = []
-
 
     #adding a filings list with every year's filings with only the necessary parameters (the parameters from the pameters_list)
     for filing in filings:
@@ -101,6 +99,7 @@ def get_non_profits(state="", category="", parameters_list=['totprgmrevnue', 'gr
 
 #Test output
 
+#Test output
 if __name__ == "__main__":
     ### CONTROL SECTION ###
 
@@ -119,6 +118,7 @@ if __name__ == "__main__":
     #year used for filtering
     year = 2022
     
+    """
     sorted_orgs = get_non_profits(state, category, parameters_list, filter_param, year)
     for item in sorted_orgs:
         print('\n_______________________________________')
@@ -128,4 +128,6 @@ if __name__ == "__main__":
         print("LAST YEAR OF FILING: ", item['last_year'])
         print("FILTER PARAMETER VALUE: ", "${:,.2f}".format(item['filter']))
         print('_______________________________________\n')
+        
+    """
         
