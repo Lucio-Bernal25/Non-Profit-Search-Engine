@@ -1,7 +1,7 @@
 
 from flask import Blueprint, request, render_template, redirect, flash
 
-from app.non_profit import get_non_profits
+from app.non_profit import get_non_profits, categorynames, filternames
 
 home_routes = Blueprint("home_routes", __name__)
 
@@ -50,7 +50,8 @@ def dashboard():
             filter_param= filter_param,
             year= year,
             sorted_orgs = sorted_orgs,
-            filter_param_name = "Total Program Revenue"
+            filter_param_name = filternames[filter_param],
+            category_name = categorynames[category]
         ) 
     except Exception as err:
         print('OOPS', err)
