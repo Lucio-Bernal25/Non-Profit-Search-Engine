@@ -104,6 +104,7 @@ def get_non_profits(state="", category="", parameters_list=['totprgmrevnue', 'gr
     sorted_orgs = sorted(sorted_orgs, key=itemgetter('filter'), reverse=True)
     return sorted_orgs
 
+#Get financial data for a specifc non-profit identified by ein.
 def fetch_financial_data(ein):
     
     BASE_URL = "https://projects.propublica.org/nonprofits/api/v2/organizations"
@@ -135,6 +136,7 @@ def fetch_financial_data(ein):
         elif assets is None: 
             graph_data.append({'Year':year, 'Total Revenue':revenues, 'Total Expenses':expenses, 'Total Assets': 0, 'URL': url}) 
 
+#Get basic data for a specifc non-profit identified by ein.
 def fetch_org_info(ein):
     BASE_URL = "https://projects.propublica.org/nonprofits/api/v2/organizations"
     
