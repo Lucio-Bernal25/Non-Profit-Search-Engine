@@ -1,6 +1,6 @@
 
 from flask import Blueprint, request, render_template, redirect, flash
-from app.non_profit import get_non_profits, categorynames, filternames
+from app.non_profit import get_non_profits, categorynames, filternames, fetch_financial_data, fetch_org_info
 
 home_routes = Blueprint("home_routes", __name__)
 
@@ -64,12 +64,16 @@ def stocks_dashboard():
 
     ein = request_data.get("ein")
 
+    organization_financials = fetch_financial_data(ein)
+
     try:
 
 
         flash("Fetched information for Organization succesfully!", "success")
         return render_template("organization.html",
-            ein=ein
+            ein=ein,
+            organization_financials=organization_financials,
+            org_info=fetch_org_info(ein)
         )
     except Exception as err:
         print('OOPS', err)
