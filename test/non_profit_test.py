@@ -3,7 +3,7 @@ import pytest
 from app.non_profit import get_non_profits 
 
 def test_get_non_profits():
-    # Sample inputs (can be adjusted as needed)
+    # Sample inputs (can be adjusted - we just used them for this testing)
     state = "FL"
     category = "4"
     parameters_list = ['totprgmrevnue', 'grsincfndrsng ']
