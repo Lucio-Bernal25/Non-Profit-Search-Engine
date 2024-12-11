@@ -49,7 +49,8 @@ def dashboard():
             category = category,
             filter_param= filter_param,
             year= year,
-            sorted_orgs = sorted_orgs
+            sorted_orgs = sorted_orgs,
+            filter_param_name = "Total Program Revenue"
         ) 
     except Exception as err:
         print('OOPS', err)
