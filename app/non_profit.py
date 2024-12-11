@@ -25,7 +25,6 @@ def build_url(state="", category=""):
 # Organization-specific accessing of data from API. Will add parameters from list, and a filter parameter that uses filter_param for the specified year.
 def org_data_access(ein, parameters_list, year, filter_param):
     organization_url = f"https://projects.propublica.org/nonprofits/api/v2/organizations/{ein}.json"
-
     # org_search refers to the /organizations/:ein.json Result
     org_search = requests.get(organization_url).json()
     # filings refer to the filing object. It is a list of years of filings each with a filing object datum.
@@ -35,20 +34,28 @@ def org_data_access(ein, parameters_list, year, filter_param):
 
 
     # Adding necessary filter parameter to org_dict for specfic year. Can be accessed with ['filter']
-    add_filter_param(org_dict, filings, year, filter_param)
+    add_filter_param(org_dict, filings, int(year), filter_param)
 
     # Adding basic necessary parameters to org_dict object which includes: ein, organiation object, year, formtype.
     org_dict['ein'] = ein
     org_dict['organization'] = org_search['organization']
-    org_dict['start_year'] = filings[-1]['tax_prd_yr']
-    org_dict['last_year'] = filings[0]['tax_prd_yr']
+    try:    
+        org_dict['start_year'] = int(filings[-1]['tax_prd_yr'])
+        org_dict['last_year'] = int(filings[0]['tax_prd_yr'])
+    except IndexError:
+        org_dict['start_year'] = None
+        org_dict['last_year'] = None
     org_dict['filings'] = []
-
 
     #adding a filings list with every year's filings with only the necessary parameters (the parameters from the pameters_list)
     for filing in filings:
         filing_dict = {}
-        filing_dict['tax_prd_year'] = filing['tax_prd_yr']
+        try:
+            year_filing = filing['tax_prd_yr']
+        except KeyError:
+            year_filing=None
+            
+        filing_dict['tax_prd_year'] = year_filing
         # Adding parameters specified in list
         for parameter in parameters_list:
             try:
@@ -62,12 +69,16 @@ def org_data_access(ein, parameters_list, year, filter_param):
 def add_filter_param(org_dict, filings, year, filter_param):
     #locating if filing of specified year exists
     org_dict['filter'] = None
-    if (int(filings[-1]['tax_prd_yr'])<=year) and (int(filings[0]['tax_prd_yr'])>=year):
-
-        #iterating through different years to find correct one and add it with the filter key
-        for filing in filings:
-            if int(filing['tax_prd_yr'])==year:
-                org_dict['filter'] = filing[filter_param]
+    try:
+        if len(filings)==0:
+            org_dict['filter'] = None
+        elif (int(filings[-1]['tax_prd_yr'])<=year) and (int(filings[0]['tax_prd_yr'])>=year):
+            #iterating through different years to find correct one and add it with the filter key
+            for filing in filings:
+                if int(filing['tax_prd_yr'])==year:
+                    org_dict['filter'] = filing[filter_param]
+    except IndexError:
+        org_dict['filter'] = None
 
 def get_non_profits(state="", category="", parameters_list=['totprgmrevnue', 'grsincfndrsng '], filter_param = 'totprgmrevnue', year = 2022):
     # URL
@@ -79,18 +90,18 @@ def get_non_profits(state="", category="", parameters_list=['totprgmrevnue', 'gr
     initial_search = requests.get(url).json()
     for item in initial_search['organizations']:
         list_ein.append({'ein':item['ein'],'info':item})
-
-
+    
     #From list of appropiate non-profits identified by eins, access the data of each one, and get the required parameters
     sorted_orgs = []
     for item in list_ein:
         org = org_data_access(item['ein'], parameters_list, year, filter_param)
         #check if filter param is valid for year (Won't add data that doesn't have a value in the year we are filtering of)
-        if not org['filter'] is None:
+        if not(org['filter'] is None):
+            org['filter'] = int(org['filter'])
             sorted_orgs.append(org)
 
     #sort the data pased on the desired parameter
-    sorted_orgs = sorted(sorted_orgs, key=itemgetter('filter'))
+    sorted_orgs = sorted(sorted_orgs, key=itemgetter('filter'), reverse=True)
     return sorted_orgs
 
 # Description of Data structure sorted_orgs:
@@ -119,6 +130,7 @@ if __name__ == "__main__":
     #year used for filtering
     year = 2022
     
+    """
     sorted_orgs = get_non_profits(state, category, parameters_list, filter_param, year)
     for item in sorted_orgs:
         print('\n_______________________________________')
@@ -128,3 +140,6 @@ if __name__ == "__main__":
         print("LAST YEAR OF FILING: ", item['last_year'])
         print("FILTER PARAMETER VALUE: ", "${:,.2f}".format(item['filter']))
         print('_______________________________________\n')
+        
+    """
+        
