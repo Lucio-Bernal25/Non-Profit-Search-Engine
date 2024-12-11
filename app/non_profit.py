@@ -112,7 +112,6 @@ def get_non_profits(state="", category="", parameters_list=['totprgmrevnue', 'gr
 
 #Test output
 
-#Test output
 if __name__ == "__main__":
     ### CONTROL SECTION ###
 
