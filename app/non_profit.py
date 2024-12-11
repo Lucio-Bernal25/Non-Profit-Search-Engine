@@ -110,7 +110,26 @@ def get_non_profits(state="", category="", parameters_list=['totprgmrevnue', 'gr
     # The organization object is a dictionary that includes details of the organization such as name, state...
     # The filings list object is a list of with each filings with each year containing: the specific year ['tax_prd_yr'] and the specified parameters given in parameters_list.
 
-#Test output
+categorynames = {
+    "":"",
+    "1": "Arts, Culture & Humanities",
+    "2": "Education",
+    "3": "Environment and Animals",
+    "4": "Health",
+    "5": "Human Services",
+    "6": "International, Foreign Affairs",
+    "7": "Public, Societal Benefit",
+    "8": "Religion Related",
+    "9": "Mutual/Membership Benefit",
+    "10": "Unknown, Unclassified"
+}
+filternames = {
+    "totrevenue": "Total Revenue",
+    "totprgmrevnue": "Total Program Revenue",
+    "grsincfndrsng": "Gross Fundraising",
+    "gftgrntsrcvd170": "Gifts, grants, membership fees received",
+    "compnsatncurrofcr": "Compensation of current officers, directors, etc."
+}
 
 #Test output
 if __name__ == "__main__":

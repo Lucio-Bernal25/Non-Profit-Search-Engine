@@ -1,5 +1,6 @@
 
-from flask import Blueprint, request, render_template
+from flask import Blueprint, request, render_template, redirect, flash
+from app.non_profit import get_non_profits, categorynames, filternames
 
 home_routes = Blueprint("home_routes", __name__)
 
@@ -16,22 +17,37 @@ def about():
     #return "About Me"
     return render_template("about.html")
 
-@home_routes.route("/hello")
-def hello_world():
-    print("HELLO...")
-
-    # if the request contains url params,
-    # for example a request to "/hello?name=Harper"
-    # the request.args property will hold the values in a dictionary-like structure
-    # can be empty like {} or full of params like {"name":"Harper"}
-    url_params = dict(request.args)
-    print("URL PARAMS:", url_params)
-
-    # access "name" key if present, otherwise use default value
-    name = url_params.get("name") or "World"
-
-    message = f"Hello, {name}!"
-
-    x = 5
-    #return message
-    return render_template("hello.html", message=message, x=x, y=20)
+#Model after stocks dashboard route
+@home_routes.route("/dashboard", methods= ["POST"])
+def dashboard():
+    print("Dashboard...")
+    
+    request_data = dict(request.form)
+    
+    #What is request_data? (GET vs POST?)
+    print("REQUEST DATA:", request_data)
+    state = request_data.get("state") or "" # get specified state or use null
+    
+    category = request_data.get("category") or "" 
+    
+    filter_param = request_data.get("filter_param") or "totprgmrevnue"
+    
+    year = request_data.get("year") or "2020"
+    try:
+        parameters_list = ['totprgmrevnue', 'grsincfndrsng ', 'pdf_url']
+        
+        sorted_orgs = get_non_profits(state, category, parameters_list, filter_param, year)
+        flash("Fetched Real Non-Profit Data!", "success") 
+        return render_template("dashboard.html",
+            state=state,
+            category = category,
+            filter_param= filter_param,
+            year= year,
+            sorted_orgs = sorted_orgs,
+            filter_param_name = filternames[filter_param],
+            category_name = categorynames[category]
+        ) 
+    except Exception as err:
+        print('OOPS', err)
+        flash("Data Error. Please check your inputs and try again!", "danger")
+        return redirect("/home")
