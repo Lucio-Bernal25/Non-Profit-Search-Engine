@@ -106,35 +106,37 @@ def get_non_profits(state="", category="", parameters_list=['totprgmrevnue', 'gr
 
 #Get financial data for a specifc non-profit identified by ein.
 def fetch_financial_data(ein):
-    
     BASE_URL = "https://projects.propublica.org/nonprofits/api/v2/organizations"
-    
     response = requests.get(f"{BASE_URL}/{ein}.json")
     data = response.json()
-    
-    # Extracting financial data for the last 5 years
+
     filings = data.get('filings_with_data', [])[:10]
     if not filings:
         print(f"No financial data found for EIN: {ein}")
-        return
+        return []
 
     graph_data = []
 
     for filing in filings:
-        year = filing.get('tax_prd_yr')
-        revenues = filing.get('totrevenue')
-        expenses = filing.get('totfuncexpns')
-        assets = filing.get('totassetsend')
-        url = filing.get('pdf_url')
+        try:
+            year = int(filing.get('tax_prd_yr', 0))
+            revenues = float(filing.get('totrevenue', 0) or 0)
+            expenses = float(filing.get('totfuncexpns', 0) or 0)
+            assets = float(filing.get('totassetsend', 0) or 0)
+            url = filing.get('pdf_url', '')
 
-        if revenues and expenses and assets is not None:
-            graph_data.append({'Year':year, 'Total Revenue':revenues, 'Total Expenses':expenses, 'Total Assets': assets, 'URL': url})
-        elif revenues is None: 
-            graph_data.append({'Year':year, 'Total Revenue':0, 'Total Expenses':expenses, 'Total Assets': assets, 'URL': url})
-        elif expenses is None: 
-            graph_data.append({'Year':year, 'Total Revenue':revenues, 'Total Expenses':0, 'Total Assets': assets, 'URL': url})
-        elif assets is None: 
-            graph_data.append({'Year':year, 'Total Revenue':revenues, 'Total Expenses':expenses, 'Total Assets': 0, 'URL': url}) 
+            graph_data.append({
+                'Year': year,
+                'Total Revenue': revenues,
+                'Total Expenses': expenses,
+                'Total Assets': assets,
+                'URL': url
+            })
+        except (ValueError, TypeError) as e:
+            print(f"Error processing filing: {e}")
+            continue
+
+    return graph_data
 
 #Get basic data for a specifc non-profit identified by ein.
 def fetch_org_info(ein):
