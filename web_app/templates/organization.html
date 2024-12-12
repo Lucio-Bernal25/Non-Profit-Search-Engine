@@ -31,21 +31,36 @@
             <h5 class="card-title">Financial Summary</h5>
         </div>
         <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th>Year</th>
-                            <th class="text-end">Total Revenue</th>
-                            <th class="text-end">Total Expenses</th>
-                            <th class="text-end">Total Assets</th>
-                            <th class="text-center">Statement</th>
-                        </tr>
-                    </thead>
-                    <tbody id="financialTableBody">
-                    </tbody>
-                </table>
-            </div>
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Year</th>
+                        <th scope="col">Total Revenue</th>
+                        <th scope="col">Total Expenses</th>
+                        <th scope="col">Total Assets</th>
+                        <th scope="col">Statement</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for data in organization_financials|sort(attribute='Year', reverse=True) %}
+                    <tr>
+                        <th scope="row">{{ loop.index }}</th>
+                        <td>{{ data.Year }}</td>
+                        <td>${{ '{:,.0f}'.format(data['Total Revenue']) }}</td>
+                        <td>${{ '{:,.0f}'.format(data['Total Expenses']) }}</td>
+                        <td>${{ '{:,.0f}'.format(data['Total Assets']) }}</td>
+                        <td>
+                            {% if data.URL %}
+                            <a href="{{ data.URL }}" target="_blank" class="btn btn-sm btn-primary">
+                                View PDF
+                            </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
@@ -59,9 +74,6 @@
     // Parse the financial data
     var financialData = JSON.parse('{{organization_financials | tojson | safe}}');
     console.log("Financial Data:", financialData);
-
-    // Sort data by year
-    financialData.sort((a, b) => a.Year - b.Year);
 
     // Prepare data for plots
     var years = financialData.map(obj => obj.Year);
@@ -91,7 +103,7 @@
         height: 500,
         yaxis: {
             tickformat: '$,',
-            title: ''
+            title: 'Amount ($)'
         },
         xaxis: {
             title: 'Year'
@@ -119,7 +131,7 @@
         height: 500,
         yaxis: {
             tickformat: '$,',
-            title: ''
+            title: 'Amount ($)'
         },
         xaxis: {
             title: 'Year'
@@ -127,23 +139,5 @@
     };
 
     Plotly.newPlot('assets-chart', [assetsSeries], layout2, {responsive: true});
-
-    // Populate table
-    var tableBody = document.getElementById('financialTableBody');
-    financialData.reverse().forEach(row => {
-        var tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${row.Year}</td>
-            <td class="text-end">$${row['Total Revenue'].toLocaleString()}</td>
-            <td class="text-end">$${row['Total Expenses'].toLocaleString()}</td>
-            <td class="text-end">$${row['Total Assets'].toLocaleString()}</td>
-            <td class="text-center">
-                ${row.URL ? `<a href="${row.URL}" target="_blank" class="btn btn-sm btn-primary">
-                    <i class="bi bi-file-earmark-pdf"></i> View
-                </a>` : ''}
-            </td>
-        `;
-        tableBody.appendChild(tr);
-    });
 </script>
 {% endblock %}
