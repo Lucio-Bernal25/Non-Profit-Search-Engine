@@ -60,8 +60,6 @@ def stocks_dashboard():
 
     request_data = dict(request.args)
 
-    print("REQUEST DATA:", request_data)
-
     ein = request_data.get("ein")
 
     try:

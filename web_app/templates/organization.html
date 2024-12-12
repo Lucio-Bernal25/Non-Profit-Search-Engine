@@ -2,18 +2,148 @@
 {% set active_page = "organization?ein" %}
 
 {% block content %}
+<div class="container-fluid py-4">
+    <h2 class="mb-4">{{org_info.name}} Financial Data</h2>
 
-    <h2> {{org_info.name}} Financial Data</h2>
+    <!-- Revenue vs Expenses Graph -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="card-title">Revenue vs Expenses Over Time</h5>
+        </div>
+        <div class="card-body">
+            <div id="revenue-expenses-chart" style="height: 500px;"></div>
+        </div>
+    </div>
 
+    <!-- Total Assets Graph -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="card-title">Total Assets Over Time</h5>
+        </div>
+        <div class="card-body">
+            <div id="assets-chart" style="height: 500px;"></div>
+        </div>
+    </div>
 
-    <p class="lead"> Financial info: {{organization_financials}} </p>
+    <!-- Financial Data Table -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="card-title">Financial Summary</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Year</th>
+                            <th class="text-end">Total Revenue</th>
+                            <th class="text-end">Total Expenses</th>
+                            <th class="text-end">Total Assets</th>
+                            <th class="text-center">Statement</th>
+                        </tr>
+                    </thead>
+                    <tbody id="financialTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 
+<!-- Include Plotly -->
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
-    <p class="lead">More info...</p>
+<script type="text/javascript">
+    console.log("FINANCIAL DASHBOARD...");
 
+    // Parse the financial data
+    var financialData = JSON.parse('{{organization_financials | tojson | safe}}');
+    console.log("Financial Data:", financialData);
 
+    // Sort data by year
+    financialData.sort((a, b) => a.Year - b.Year);
 
+    // Prepare data for plots
+    var years = financialData.map(obj => obj.Year);
+    var revenues = financialData.map(obj => obj['Total Revenue']);
+    var expenses = financialData.map(obj => obj['Total Expenses']);
+    var assets = financialData.map(obj => obj['Total Assets']);
 
- 
+    // Create Revenue vs Expenses plot
+    var revenueSeries = {
+        x: years,
+        y: revenues,
+        name: 'Total Revenue',
+        mode: 'lines+markers',
+        line: {color: '#0d6efd'}
+    };
 
+    var expensesSeries = {
+        x: years,
+        y: expenses,
+        name: 'Total Expenses',
+        mode: 'lines+markers',
+        line: {color: '#dc3545'}
+    };
+
+    var layout1 = {
+        title: 'Revenue vs Expenses Over Time',
+        height: 500,
+        yaxis: {
+            tickformat: '$,',
+            title: ''
+        },
+        xaxis: {
+            title: 'Year'
+        },
+        showlegend: true,
+        legend: {
+            x: 0,
+            y: 1.2
+        }
+    };
+
+    Plotly.newPlot('revenue-expenses-chart', [revenueSeries, expensesSeries], layout1, {responsive: true});
+
+    // Create Assets plot
+    var assetsSeries = {
+        x: years,
+        y: assets,
+        name: 'Total Assets',
+        mode: 'lines+markers',
+        line: {color: '#198754'}
+    };
+
+    var layout2 = {
+        title: 'Total Assets Over Time',
+        height: 500,
+        yaxis: {
+            tickformat: '$,',
+            title: ''
+        },
+        xaxis: {
+            title: 'Year'
+        }
+    };
+
+    Plotly.newPlot('assets-chart', [assetsSeries], layout2, {responsive: true});
+
+    // Populate table
+    var tableBody = document.getElementById('financialTableBody');
+    financialData.reverse().forEach(row => {
+        var tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${row.Year}</td>
+            <td class="text-end">$${row['Total Revenue'].toLocaleString()}</td>
+            <td class="text-end">$${row['Total Expenses'].toLocaleString()}</td>
+            <td class="text-end">$${row['Total Assets'].toLocaleString()}</td>
+            <td class="text-center">
+                ${row.URL ? `<a href="${row.URL}" target="_blank" class="btn btn-sm btn-primary">
+                    <i class="bi bi-file-earmark-pdf"></i> View
+                </a>` : ''}
+            </td>
+        `;
+        tableBody.appendChild(tr);
+    });
+</script>
 {% endblock %}
