@@ -26,5 +26,16 @@ Run the non-profit search engine (Console):
 ```sh
 #ALPHAVANTAGE_API_KEY="..." python app/unemployment.py
 
-python -m app.unemployment
+python -m app.non_profit.py
+```
+
+Webapp:
+flask run
+
+## Testing
+
+Run tests:
+
+```sh
+pytest
 ```

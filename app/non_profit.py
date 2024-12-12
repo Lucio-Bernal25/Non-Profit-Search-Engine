@@ -104,14 +104,76 @@ def get_non_profits(state="", category="", parameters_list=['totprgmrevnue', 'gr
     sorted_orgs = sorted(sorted_orgs, key=itemgetter('filter'), reverse=True)
     return sorted_orgs
 
+#Get financial data for a specifc non-profit identified by ein.
+def fetch_financial_data(ein):
+    
+    BASE_URL = "https://projects.propublica.org/nonprofits/api/v2/organizations"
+    
+    response = requests.get(f"{BASE_URL}/{ein}.json")
+    data = response.json()
+    
+    # Extracting financial data for the last 5 years
+    filings = data.get('filings_with_data', [])[:10]
+    if not filings:
+        print(f"No financial data found for EIN: {ein}")
+        return
+
+    graph_data = []
+
+    for filing in filings:
+        year = filing.get('tax_prd_yr')
+        revenues = filing.get('totrevenue')
+        expenses = filing.get('totfuncexpns')
+        assets = filing.get('totassetsend')
+        url = filing.get('pdf_url')
+
+        if revenues and expenses and assets is not None:
+            graph_data.append({'Year':year, 'Total Revenue':revenues, 'Total Expenses':expenses, 'Total Assets': assets, 'URL': url})
+        elif revenues is None: 
+            graph_data.append({'Year':year, 'Total Revenue':0, 'Total Expenses':expenses, 'Total Assets': assets, 'URL': url})
+        elif expenses is None: 
+            graph_data.append({'Year':year, 'Total Revenue':revenues, 'Total Expenses':0, 'Total Assets': assets, 'URL': url})
+        elif assets is None: 
+            graph_data.append({'Year':year, 'Total Revenue':revenues, 'Total Expenses':expenses, 'Total Assets': 0, 'URL': url}) 
+
+#Get basic data for a specifc non-profit identified by ein.
+def fetch_org_info(ein):
+    BASE_URL = "https://projects.propublica.org/nonprofits/api/v2/organizations"
+    
+    response = requests.get(f"{BASE_URL}/{ein}.json")
+    data = response.json()
+    
+    return data['organization']
+    
+    
 # Description of Data structure sorted_orgs:
     # A list of org objects organized based on a specfic value on a specific year.
     # Each org object is a dictionary that includes the base parameters ein, the organization object ['organization'], start_year, last year, formtype, and the filings list object ['filings'].
     # The organization object is a dictionary that includes details of the organization such as name, state...
     # The filings list object is a list of with each filings with each year containing: the specific year ['tax_prd_yr'] and the specified parameters given in parameters_list.
 
-#Test output
+categorynames = {
+    "":"",
+    "1": "Arts, Culture & Humanities",
+    "2": "Education",
+    "3": "Environment and Animals",
+    "4": "Health",
+    "5": "Human Services",
+    "6": "International, Foreign Affairs",
+    "7": "Public, Societal Benefit",
+    "8": "Religion Related",
+    "9": "Mutual/Membership Benefit",
+    "10": "Unknown, Unclassified"
+}
+filternames = {
+    "totrevenue": "Total Revenue",
+    "totprgmrevnue": "Total Program Revenue",
+    "grsincfndrsng": "Gross Fundraising",
+    "gftgrntsrcvd170": "Gifts, grants, membership fees received",
+    "compnsatncurrofcr": "Compensation of current officers, directors, etc."
+}
 
+#Test output
 if __name__ == "__main__":
     ### CONTROL SECTION ###
 

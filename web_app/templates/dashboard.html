@@ -1,0 +1,43 @@
+{% extends "bootstrap_5_layout.html" %}
+{% set active_page = "dashboard" %}
+
+{% block content %}
+    <h2>Showing results {{ category_name }} focused non-profits in {{ state }}.</h2>
+    <p class="lead">Non-profits are being sorted by their {{filter_param_name}} value in the year {{year}}.</p> 
+    <div id="chart-container" height="700px"></div>
+    <style>
+        .important-cell {
+            background-color: #26b381;
+            font-weight: 850;
+        }
+        </style>
+        
+        <table class="table table-hover">
+          <thead class="table-light">
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Organization Name</th>
+              <th scope="col">City</th>
+              <th scope="col">Total Assets</th>
+              <th scope="col">Annual Income</th>
+              <th scope="col" class="important-cell">{{filter_param_name}}</th>
+              <th scope="col" class="important-cell"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for org in sorted_orgs %}
+            <tr>
+              <th scope="row">{{ loop.index }}</th>
+              <td>{{ org.organization.name }}</td>
+              <td>{{ org.organization.city }}</td>
+              <td>${{ '{:,.0f}'.format(org.organization.asset_amount) }}</td>
+              <td>${{ '{:,.0f}'.format(org.organization.income_amount) }}</td>
+              <td class="important-cell">${{ '{:,.0f}'.format(org.filter) }}</td>
+              <td><a href="/organization?ein={{ org.organization.ein }}">See Details</a></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+    
+{% endblock %}
+
