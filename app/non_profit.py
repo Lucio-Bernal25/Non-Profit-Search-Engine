@@ -106,6 +106,8 @@ def get_non_profits(state="", category="", parameters_list=['totprgmrevnue', 'gr
 
 #Get financial data for a specifc non-profit identified by ein.
 def fetch_financial_data(ein):
+    # ... existing code ...
+    
     BASE_URL = "https://projects.propublica.org/nonprofits/api/v2/organizations"
     response = requests.get(f"{BASE_URL}/{ein}.json")
     data = response.json()
@@ -114,23 +116,24 @@ def fetch_financial_data(ein):
     if not filings:
         print(f"No financial data found for EIN: {ein}")
         return []
-
+    
     graph_data = []
-
+    
     for filing in filings:
         try:
-            year = int(filing.get('tax_prd_yr', 0))
-            revenues = float(filing.get('totrevenue', 0) or 0)
-            expenses = float(filing.get('totfuncexpns', 0) or 0)
-            assets = float(filing.get('totassetsend', 0) or 0)
-            url = filing.get('pdf_url', '')
-
             graph_data.append({
-                'Year': year,
-                'Total Revenue': revenues,
-                'Total Expenses': expenses,
-                'Total Assets': assets,
-                'URL': url
+                
+                'Year': int(filing.get('tax_prd_yr', 0)),
+                'totrevenue': float(filing.get('totrevenue', 0) or 0),
+                'totfuncexpns': float(filing.get('totfuncexpns', 0) or 0),
+                'totassetsend': float(filing.get('totassetsend', 0) or 0),
+                'URL': filing.get('pdf_url', ''),
+
+                'totcntrbgfts': float(filing.get('totcntrbgfts', 0) or 0),
+                'totprgmrevnue': float(filing.get('totprgmrevnue', 0) or 0),
+                'invstmntinc': float(filing.get('invstmntinc', 0) or 0),
+                'totliabend': float(filing.get('totliabend', 0) or 0),
+                'lessdirfndrsng': float(filing.get('lessdirfndrsng', 0) or 0)
             })
         except (ValueError, TypeError) as e:
             print(f"Error processing filing: {e}")
@@ -175,7 +178,7 @@ filternames = {
     "compnsatncurrofcr": "Compensation of current officers, directors, etc."
 }
 states = [
-    'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
+    'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FL', 'GA',
     'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
     'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
     'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',

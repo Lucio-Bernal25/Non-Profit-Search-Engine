@@ -3,7 +3,24 @@
 
 {% block content %}
 <div class="container-fluid py-4">
-    <h2 class="mb-4">{{org_info.name}} Financial Data</h2>
+    <!-- Organization Info Card -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2 class="card-title">{{org_info.name}}</h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Address:</strong> {{org_info.street}}</p>
+                    <p><strong>City:</strong> {{org_info.city}}, {{org_info.state}} {{org_info.zipcode}}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>EIN:</strong> {{ein}}</p>
+                    <p><strong>Subsection:</strong> {{org_info.subseccd}}</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Revenue vs Expenses Graph -->
     <div class="card mb-4">
@@ -15,13 +32,33 @@
         </div>
     </div>
 
-    <!-- Total Assets Graph -->
+    <!-- Revenue Breakdown Graph -->
     <div class="card mb-4">
         <div class="card-header">
-            <h5 class="card-title">Total Assets Over Time</h5>
+            <h5 class="card-title">Revenue Sources Breakdown</h5>
         </div>
         <div class="card-body">
-            <div id="assets-chart" style="height: 500px;"></div>
+            <div id="revenue-breakdown-chart" style="height: 500px;"></div>
+        </div>
+    </div>
+
+    <!-- Assets vs Liabilities Graph -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="card-title">Assets vs Liabilities Over Time</h5>
+        </div>
+        <div class="card-body">
+            <div id="assets-liabilities-chart" style="height: 500px;"></div>
+        </div>
+    </div>
+
+    <!-- Fundraising Efficiency Graph -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="card-title">Fundraising Efficiency</h5>
+        </div>
+        <div class="card-body">
+            <div id="fundraising-efficiency-chart" style="height: 500px;"></div>
         </div>
     </div>
 
@@ -39,7 +76,7 @@
                         <th scope="col">Total Revenue</th>
                         <th scope="col">Total Expenses</th>
                         <th scope="col">Total Assets</th>
-                        <th scope="col">Statement</th>
+                        <th scope="col">Filing Statement</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -47,9 +84,9 @@
                     <tr>
                         <th scope="row">{{ loop.index }}</th>
                         <td>{{ data.Year }}</td>
-                        <td>${{ '{:,.0f}'.format(data['Total Revenue']) }}</td>
-                        <td>${{ '{:,.0f}'.format(data['Total Expenses']) }}</td>
-                        <td>${{ '{:,.0f}'.format(data['Total Assets']) }}</td>
+                        <td>${{ '{:,.0f}'.format(data['totrevenue']) }}</td>
+                        <td>${{ '{:,.0f}'.format(data['totfuncexpns']) }}</td>
+                        <td>${{ '{:,.0f}'.format(data['totassetsend']) }}</td>
                         <td>
                             {% if data.URL %}
                             <a href="{{ data.URL }}" target="_blank" class="btn btn-sm btn-primary">
@@ -77,11 +114,11 @@
 
     // Prepare data for plots
     var years = financialData.map(obj => obj.Year);
-    var revenues = financialData.map(obj => obj['Total Revenue']);
-    var expenses = financialData.map(obj => obj['Total Expenses']);
-    var assets = financialData.map(obj => obj['Total Assets']);
-
-    // Create Revenue vs Expenses plot
+    var revenues = financialData.map(obj => obj['totrevenue']);
+    var expenses = financialData.map(obj => obj['totfuncexpns']);
+    var assets = financialData.map(obj => obj['totassetsend']);
+    
+    // Revenue vs Expenses plot
     var revenueSeries = {
         x: years,
         y: revenues,
@@ -117,17 +154,62 @@
 
     Plotly.newPlot('revenue-expenses-chart', [revenueSeries, expensesSeries], layout1, {responsive: true});
 
-    // Create Assets plot
+    // Revenue Breakdown
+    var contributionsSeries = {
+        x: years,
+        y: financialData.map(obj => obj['totcntrbgfts'] || 0),
+        name: 'Contributions',
+        type: 'bar'
+    };
+
+    var programSeries = {
+        x: years,
+        y: financialData.map(obj => obj['totprgmrevnue'] || 0),
+        name: 'Program Revenue',
+        type: 'bar'
+    };
+
+    var investmentSeries = {
+        x: years,
+        y: financialData.map(obj => obj['invstmntinc'] || 0),
+        name: 'Investment Income',
+        type: 'bar'
+    };
+
+    var layout2 = {
+        title: 'Revenue Sources Breakdown',
+        height: 500,
+        barmode: 'stack',
+        yaxis: {
+            tickformat: '$,',
+            title: ''
+        },
+        xaxis: {
+            title: 'Year'
+        }
+    };
+
+    Plotly.newPlot('revenue-breakdown-chart', [contributionsSeries, programSeries, investmentSeries], layout2, {responsive: true});
+
+    // Assets vs Liabilities
     var assetsSeries = {
         x: years,
-        y: assets,
+        y: financialData.map(obj => obj['totassetsend'] || 0),
         name: 'Total Assets',
         mode: 'lines+markers',
         line: {color: '#198754'}
     };
 
-    var layout2 = {
-        title: 'Total Assets Over Time',
+    var liabilitiesSeries = {
+        x: years,
+        y: financialData.map(obj => obj['totliabend'] || 0),
+        name: 'Total Liabilities',
+        mode: 'lines+markers',
+        line: {color: '#ffc107'}
+    };
+
+    var layout3 = {
+        title: 'Assets vs Liabilities Over Time',
         height: 500,
         yaxis: {
             tickformat: '$,',
@@ -138,6 +220,35 @@
         }
     };
 
-    Plotly.newPlot('assets-chart', [assetsSeries], layout2, {responsive: true});
+    Plotly.newPlot('assets-liabilities-chart', [assetsSeries, liabilitiesSeries], layout3, {responsive: true});
+
+    // Fundraising Efficiency
+    var fundraisingEfficiency = years.map((year, index) => {
+        const fundraisingExpense = financialData[index]['lessdirfndrsng'] || 0;
+        const totalRevenue = financialData[index]['totrevenue'] || 1;  // Avoid division by zero
+        return (fundraisingExpense / totalRevenue) * 100;
+    });
+
+    var efficiencySeries = {
+        x: years,
+        y: fundraisingEfficiency,
+        name: 'Fundraising Expense Ratio',
+        mode: 'lines+markers',
+        line: {color: '#6610f2'}
+    };
+
+    var layout4 = {
+        title: 'Fundraising Expense Ratio (% of Total Revenue)',
+        height: 500,
+        yaxis: {
+            title: 'Percentage',
+            tickformat: '.1f'
+        },
+        xaxis: {
+            title: 'Year'
+        }
+    };
+
+    Plotly.newPlot('fundraising-efficiency-chart', [efficiencySeries], layout4, {responsive: true});
 </script>
 {% endblock %}
