@@ -28,7 +28,12 @@ python -m app.non_profit.py
 ```
 
 Webapp:
+Add to ENV:
+FLASK_APP = web_app
+
+```sh
 flask run
+```
 
 ## Testing
 
