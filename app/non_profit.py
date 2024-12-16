@@ -174,7 +174,14 @@ filternames = {
     "gftgrntsrcvd170": "Gifts, grants, membership fees received",
     "compnsatncurrofcr": "Compensation of current officers, directors, etc."
 }
-
+states = [
+    'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
+    'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
+    'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
+    'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
+    'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
+]
+    
 #Test output
 if __name__ == "__main__":
     ### CONTROL SECTION ###

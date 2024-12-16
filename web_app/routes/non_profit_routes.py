@@ -1,6 +1,6 @@
 
 from flask import Blueprint, request, render_template, redirect, flash
-from app.non_profit import get_non_profits, categorynames, filternames, fetch_financial_data, fetch_org_info
+from app.non_profit import get_non_profits, categorynames, filternames, states, fetch_financial_data, fetch_org_info
 
 home_routes = Blueprint("home_routes", __name__)
 
@@ -35,6 +35,9 @@ def dashboard():
     year = request_data.get("year") or "2020"
     try:
         parameters_list = ['totprgmrevnue', 'grsincfndrsng ', 'pdf_url']
+        
+        if not state in states:
+            state=3/0 #Had to get an error :/
         
         sorted_orgs = get_non_profits(state, category, parameters_list, filter_param, year)
         flash("Fetched Real Non-Profit Data!", "success") 
